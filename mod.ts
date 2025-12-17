@@ -77,22 +77,22 @@ export async function run(): Promise<void> {
     let passed = 0;
 
     for (const suite of suites) {
-        console.log(`\n📦 ${suite.name}`);
+        console.log(`\n=> ${suite.name}`);
 
         for (const t of suite.tests) {
             total++;
             try {
                 await t.fn();
                 passed++;
-                console.log(` ✅ ${t.name}`);
+                console.log(`${t.name} passed`);
             } catch (err) {
-                console.log(` ❌ ${t.name}`);
+                console.log(`${t.name} failed`);
                 console.log(` ${(err as Error).message}`);
             }
         }
     }
 
-    console.log(`\n🧪 Résultat: ${passed}/${total} tests réussis`);
+    console.log(`\n Résultat: ${passed}/${total} tests réussis`);
 
     if (passed !== total) {
         Deno.exit(1);
