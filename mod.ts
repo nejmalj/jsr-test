@@ -48,8 +48,7 @@ export function test(name: string, fn: TestFn): void {
  * API d'assertions
  */
 class Expect<T> {
-    constructor(private received: T) {
-    }
+    constructor(private received: T) {}
 
     /**
      * Vérifie l'égalité stricte
@@ -57,6 +56,45 @@ class Expect<T> {
      */
     toBe(expected: T): void {
         if (!Object.is(this.received, expected)) {
+            throw new Error(`Expected ${this.received} to be ${expected}`);
         }
+    }
+}
+
+/**
+ * Point d'entrée pour les assertions
+ * @param value Valeur à tester
+ */
+export function expect<T>(value: T): Expect<T> {
+    return new Expect(value);
+}
+
+/**
+ * Exécute toutes les suites de tests
+ */
+export async function run(): Promise<void> {
+    let total = 0;
+    let passed = 0;
+
+    for (const suite of suites) {
+        console.log(`\n📦 ${suite.name}`);
+
+        for (const t of suite.tests) {
+            total++;
+            try {
+                await t.fn();
+                passed++;
+                console.log(` ✅ ${t.name}`);
+            } catch (err) {
+                console.log(` ❌ ${t.name}`);
+                console.log(` ${(err as Error).message}`);
+            }
+        }
+    }
+
+    console.log(`\n🧪 Résultat: ${passed}/${total} tests réussis`);
+
+    if (passed !== total) {
+        Deno.exit(1);
     }
 }
